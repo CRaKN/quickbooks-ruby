@@ -50,6 +50,11 @@ module Quickbooks
         if response.code.to_i == 200
           model.from_xml(parse_singular_entity_response(model, response.plain_body))
         else
+          Bugsnag.notify('Error: Non-200 QBO response') do |report|
+            report.severity = 'error'
+            report.add_tab(:quick_books_online, body: response)
+          end
+
           nil
         end
       end
